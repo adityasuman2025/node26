@@ -58,12 +58,8 @@ app.patch("/users/:id", (...args) => {
 
 
 // default apis
-app.get("/ping", (req, res) => {
-    return res.send("pong");
-});
-app.get("/", (req, res) => {
-    return res.send("welcome to MNgo backend server");
-});
+app.get("/ping", (req, res) => res.send("pong"));
+app.get("/", (req, res) => res.send("welcome to MNgo backend server"));
 
 // handles error for all routes
 app.use("/", (err, req, res, next) => {
