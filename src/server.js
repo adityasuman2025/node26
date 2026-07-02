@@ -1,36 +1,82 @@
-// import { MongoClient } from "mongodb";
-
-// const MONGO_URI = 'mongodb+srv://adityasuman2025:aditya123@mngo.g2pfpl1.mongodb.net/?appName=mngo'
-// const client = new MongoClient(MONGO_URI);
-// async function mongoConnect() {
-//     try {
-//         await client.connect();
-//         const dbYo = client.db("yo")
-//         const collUsers = dbYo.collection("users");
-//         const findFilter = await collUsers.find({ count: { $gt: 1 } }).project({ name: 1, count: 1 }).toArray();
-//         console.log("findFilter", findFilter)
-//         // const insert = await collUsers.insertMany([{ name: "Aditya Suman", address: "Ashanagar" }]);
-//         // const _delete = await collUsers.deleteOne({ name: "Aditya Suman" });
-//         const _rename = await collUsers.updateMany({ name: "Anvik Vinayak" }, { $inc: { count: 1 } });
-//         const findAll = await collUsers.aggregate([{ $match: { address: "Ashanagar" } }]).toArray();
-//         console.log("findAll", findAll)
-//     } catch (e) {
-//         console.log("error", e)
-//     }
-// }
-// mongoConnect();
-
 import express from "express";
-const PORT = 2000;
+import dbConnection from "./db.js";
+import UsersModel from "./models/Users.js";
+import { sendErrorResp, sendResp } from "./utils.js";
+import { PORT } from "./constants.js";
 
 const app = new express();
-app.listen(PORT, () => {
-    console.log("server is running on", PORT);
+
+app.use(express.json()); // express.json() middleware parses the incoming HTTP request to get JSON payload
+
+app.post("/signup", async (req, res) => {
+    try {
+        const { name, email, password, address, gender } = req.body || {};
+
+        const obj = UsersModel({ name, email, password, address, gender });
+        await obj.save();
+
+        sendResp(res, "new user added")
+    } catch (e) {
+        console.log("POST /signup threw error", e)
+        sendErrorResp(res, 500, "something went wrong");
+    }
 });
 
-app.use("/bro", (req, res) => {
-    res.send("hi bro");
+app.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body || {};
+
+        const data = await UsersModel.find({ email, password });
+        if (data.length) sendResp(res, data[0]);
+        else sendErrorResp(res, 404, "user not found");
+    } catch (e) {
+        console.log("POST /login threw error", e)
+        sendErrorResp(res, 500, "something went wrong");
+    }
 });
-app.use("/", (req, res) => {
-    res.send("hi world");
+
+app.delete("/users", async (req, res) => {
+    try {
+        const { id } = req.body || {};
+
+        const data = await UsersModel.deleteOne({ _id: id });
+        if (data.deletedCount > 0) sendResp(res, "user deleted");
+        else sendErrorResp(res, 404, "user not found");
+    } catch (e) {
+        console.log("DELETE /users threw error", e)
+        sendErrorResp(res, 500, "something went wrong");
+    }
 });
+
+app.patch("/users", async (req, res) => {
+    try {
+        const { id, ...rest } = req.body || {};
+
+        const data = await UsersModel.updateOne({ _id: id }, { ...rest });
+        if (data.matchedCount > 0) sendResp(res, "user data updated");
+        else sendErrorResp(res, 404, "user not found");
+    } catch (e) {
+        console.log("PATCH /users threw error", e)
+        sendErrorResp(res, 500, "something went wrong");
+    }
+});
+
+
+// default apis
+app.get("/ping", (req, res) => {
+    res.send("pong");
+});
+app.get("/", (req, res) => {
+    res.send("welcome to MNgo backend server");
+});
+
+// handles error for all routes
+app.use("/", (err, req, res, next) => {
+    if (err) res.status(500).send("something went wrong")
+});
+
+dbConnection
+    .then(() => {
+        app.listen(PORT, () => console.log("server running on", PORT))
+    })
+    .catch(() => console.log("db connection failed"))
