@@ -23,10 +23,6 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: [true, "Password is required"],
-        trim: true,
-        validate: function(value) {
-            if (!validator.isStrongPassword(value)) throw new Error("Not a strong email")
-        }
     },
     address: {
         type: String,

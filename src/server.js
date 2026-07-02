@@ -1,5 +1,6 @@
 import express from "express";
 import validator from "validator";
+import bcrypt from "bcrypt";
 import dbConnection from "./db.js";
 import UsersModel from "./models/Users.js";
 import { sendErrorResp, sendResp, apiHandler } from "./utils.js";
@@ -10,9 +11,13 @@ app.use(express.json()); // express.json() middleware parses the incoming HTTP r
 
 app.post("/signup", (...args) => {
     apiHandler(async (req, res) => {
-        const { name, email, password, address, gender, age, profilePic, skills } = req.body || {};
+        const { name = "", email = "", password = "" } = req.body || {};
+        if (!name.trim() || !email.trim() || !password.trim() || !validator.isEmail(email)) return sendErrorResp(res, 400, "invalid name, email or password");
+        if (!validator.isStrongPassword(password)) return sendErrorResp(res, 400, "password is not strong enough");
 
-        const obj = UsersModel({ name, email, password, address, gender, age, profilePic, skills });
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const obj = UsersModel({ name, email, password: hashedPassword });
         await obj.save();
 
         return sendResp(res, "new user added")
@@ -24,9 +29,12 @@ app.post("/login", (...args) => {
         const { email = "", password = "" } = req.body || {};
         if (!email.trim() || !password.trim() || !validator.isEmail(email)) return sendErrorResp(res, 400, "invalid email or password");
 
-        const data = await UsersModel.find({ email, password });
-        if (data.length) return sendResp(res, data[0]);
-        else return sendErrorResp(res, 404, "user not found");
+        const data = await UsersModel.findOne({ email });
+        if (data) {
+            const isPasswordValid = await bcrypt.compare(password, data.password);
+            if (isPasswordValid) return sendResp(res, "logged in successfully");
+            else return sendErrorResp(res, 404, "invalid credentials");
+        } else return sendErrorResp(res, 404, "invalid credentials");
     }, ...args);
 });
 
