@@ -8,12 +8,16 @@ export function sendResp(res, data) {
     return res.status(200).send({ status: 200, data })
 }
 
+export function errorCatch(err, req, res) {
+    console.log(req.method, req?.route?.path, "api error:", err.message)
+    if (err instanceof mongoose.Error || err.name === "MongoServerError") return sendErrorResp(res, 400, err.message);
+    sendErrorResp(res, 500, "something went wrong");
+}
+
 export async function apiHandler(func, req, res, next) {
     try {
         await func(req, res, next);
-    } catch (e) {
-        console.log(req?.route?.path, "api error:", e.message)
-        if (e instanceof mongoose.Error || e.name === "MongoServerError") return sendErrorResp(res, 400, e.message);
-        sendErrorResp(res, 500, "something went wrong");
+    } catch (err) {
+        errorCatch(err, req, res);
     }
 }
