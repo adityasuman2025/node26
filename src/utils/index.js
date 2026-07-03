@@ -10,7 +10,7 @@ export function sendResp(res, data, others = {}) {
 }
 
 export function errorCatch(err, req, res) {
-    console.log(req.method, req?.originalUrl, "api error:", err.message)
+    console.log(req?.method, req?.originalUrl, "api error:", err?.message)
     if (err instanceof mongoose.Error || err.name === "MongoServerError") return sendErrorResp(res, 400, err.message);
     sendErrorResp(res, 500, "something went wrong");
 }

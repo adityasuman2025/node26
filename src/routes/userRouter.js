@@ -3,6 +3,7 @@ import UsersModel from "../models/usersModel.js";
 import ConnectionsModel, { STATUS_ACCEPTED, STATUS_INTERESTED } from "../models/connectionsModel.js";
 import { userAuth } from "../middlewares/auth.js";
 import { apiHandler, sendErrorResp, sendResp } from "../utils/index.js";
+import { ALLOWED_USER_FIELDS } from "../constants.js"
 
 const userRouter = Router();
 
@@ -14,7 +15,7 @@ userRouter.get("/requests", userAuth, (...args) => {
             const loggedUserId = loggedUser._id;
             if (!loggedUserId) return sendErrorResp(res, 404, "user not found");
 
-            const connections = await ConnectionsModel.find({ toUserId: loggedUserId, status: STATUS_INTERESTED }).populate("fromUserId", ["name", "profilePic", "gender"]);
+            const connections = await ConnectionsModel.find({ toUserId: loggedUserId, status: STATUS_INTERESTED }).populate("fromUserId", ALLOWED_USER_FIELDS);
             sendResp(res, connections);
 
         } else return sendErrorResp(res, 404, "user not found");
@@ -31,7 +32,7 @@ userRouter.get("/connections", userAuth, (...args) => {
 
             const connections = await ConnectionsModel.find({
                 $or: [{ toUserId: loggedUserId, status: STATUS_ACCEPTED }, { fromUserId: loggedUserId, status: STATUS_ACCEPTED }]
-            }).populate("fromUserId", ["name", "profilePic", "gender"]).populate("toUserId", ["name", "profilePic", "gender"]);
+            }).populate("fromUserId", ALLOWED_USER_FIELDS).populate("toUserId", ALLOWED_USER_FIELDS);
 
             const data = connections.map(item => item.fromUserId._id.toString() === loggedUserId.toString() ? item.toUserId : item.fromUserId)
             sendResp(res, data);
@@ -78,7 +79,7 @@ userRouter.get("/feed", userAuth, (...args) => {
                     { _id: { $ne: loggedUserId } } // logged user should not get his own profile
                 ]
             };
-            const connections = await UsersModel.find(query).skip((page - 1) * limit).limit(limit).select(["name", "profilePic", "gender", "age", "skills"]);
+            const connections = await UsersModel.find(query).skip((page - 1) * limit).limit(limit).select(ALLOWED_USER_FIELDS);
             const total = await UsersModel.countDocuments(query);
 
             sendResp(res, connections, { page, limit, total });
