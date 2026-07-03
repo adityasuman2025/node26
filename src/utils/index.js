@@ -5,8 +5,8 @@ export function sendErrorResp(res, status, error) {
     return res.status(status).json({ status, error })
 }
 
-export function sendResp(res, data) {
-    return res.status(200).json({ status: 200, data })
+export function sendResp(res, data, others = {}) {
+    return res.status(200).json({ status: 200, data, ...others })
 }
 
 export function errorCatch(err, req, res) {

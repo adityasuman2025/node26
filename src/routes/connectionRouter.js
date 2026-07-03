@@ -6,6 +6,7 @@ import { apiHandler, sendErrorResp, sendResp } from "../utils/index.js";
 
 const connectionRouter = Router();
 
+// ignore or send connection request to a user
 connectionRouter.post("/send/:status/:toUserId", userAuth, (...args) => {
     apiHandler(async (req, res) => {
         const loggedUser = req.loggedUser;
@@ -32,6 +33,7 @@ connectionRouter.post("/send/:status/:toUserId", userAuth, (...args) => {
     }, ...args);
 });
 
+// accept or reject a connection request
 connectionRouter.post("/review/:status/:requestId", userAuth, (...args) => {
     apiHandler(async (req, res) => {
         const loggedUser = req.loggedUser;

@@ -8,11 +8,13 @@ export const STATUS_REJECTED = "Rejected";
 const connectionsSchema = new Schema({
     fromUserId: {
         type: Schema.Types.ObjectId,
+        ref: "users", // reference to the users collections
         required: [true, "from is required"],
         cast: "invalid from user id", // when type does not match then this error message will go
     },
     toUserId: {
         type: Schema.Types.ObjectId,
+        ref: "users", // reference to the users collections
         required: [true, "to is required"],
         cast: "invalid to user id", // when type does not match then this error message will go
     },

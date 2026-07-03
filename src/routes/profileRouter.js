@@ -7,6 +7,7 @@ import { getValidEditUserInput } from "../utils/validation.js";
 
 const profileRouter = express.Router();
 
+// get logged user's details
 profileRouter.get("/", userAuth, (...args) => {
     apiHandler(async (req, res) => {
         const loggedUser = req.loggedUser;
@@ -17,6 +18,7 @@ profileRouter.get("/", userAuth, (...args) => {
     }, ...args);
 });
 
+// delete the logged user
 profileRouter.delete("/", userAuth, (...args) => {
     apiHandler(async (req, res) => {
         const loggedUser = req.loggedUser;
@@ -29,6 +31,7 @@ profileRouter.delete("/", userAuth, (...args) => {
     }, ...args);
 });
 
+// update logged user's details
 profileRouter.patch("/", userAuth, (...args) => {
     apiHandler(async (req, res) => {
         const loggedUser = req.loggedUser;
@@ -42,6 +45,7 @@ profileRouter.patch("/", userAuth, (...args) => {
     }, ...args);
 });
 
+// change logged user's password
 profileRouter.patch("/changePassword", userAuth, (...args) => {
     apiHandler(async (req, res) => {
         const loggedUser = req.loggedUser;
