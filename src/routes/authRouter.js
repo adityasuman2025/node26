@@ -1,8 +1,7 @@
 import { Router } from "express";
 import validator from "validator";
-import bcrypt from "bcrypt";
 import UsersModel from "../models/usersModel.js";
-import { sendErrorResp, sendResp, apiHandler } from "../utils.js";
+import { sendErrorResp, sendResp, apiHandler, getHashedPassword } from "../utils/index.js";
 import { AUTH_TOKEN_KEY } from "../constants.js";
 
 const authRouter = Router();
@@ -14,7 +13,7 @@ authRouter.post("/signup", (...args) => {
         if (!name.trim() || !email.trim() || !password.trim() || !validator.isEmail(email)) return sendErrorResp(res, 400, "invalid name, email or password");
         if (!validator.isStrongPassword(password)) return sendErrorResp(res, 400, "password is not strong enough");
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await getHashedPassword(password);
 
         const user = UsersModel({ name, email, password: hashedPassword });
         await user.save();
@@ -46,7 +45,7 @@ authRouter.post("/login", (...args) => {
 authRouter.get("/logout", (...args) => {
     apiHandler(async (req, res) => {
         res.cookie(AUTH_TOKEN_KEY, null, { expires: new Date() }); // expiring the cookies just now
-        sendResp(res, "logged out successfully");
+        return sendResp(res, "logged out successfully");
     }, ...args);
 });
 

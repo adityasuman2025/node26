@@ -2,8 +2,8 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import dbConnection from "./db.js";
 import authRouter from "./routes/authRouter.js";
-import userRouter from "./routes/userRouter.js";
-import { sendErrorResp } from "./utils.js";
+import profileRouter from "./routes/profileRouter.js";
+import { sendErrorResp } from "./utils/index.js";
 import { PORT } from "./constants.js";
 
 const app = new express();
@@ -11,7 +11,7 @@ app.use(express.json()); // express.json() middleware parses the incoming HTTP r
 app.use(cookieParser()); // cookie-parser middleware parses the cookie containing in the API request
 
 app.use("/auth", authRouter);
-app.use("/", userRouter);
+app.use("/profile", profileRouter);
 
 
 // default apis

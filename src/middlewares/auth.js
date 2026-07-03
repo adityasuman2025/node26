@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import UsersModel from "../models/usersModel.js";
-import { errorCatch, sendErrorResp } from "../utils.js"
+import { errorCatch, sendErrorResp } from "../utils/index.js";
 import { JWT_SECRET_KEY } from "../constants.js";
 
 export async function userAuth(req, res, next) {
@@ -9,15 +9,13 @@ export async function userAuth(req, res, next) {
         if (!token.trim()) return sendErrorResp(res, 403, "token is not valid");
 
         const { _id } = await jwt.verify(token, JWT_SECRET_KEY) || {};
-        if (!_id) return sendErrorResp(res, 403, "token is not valid");
+        if (!_id) return sendErrorResp(res, 403, "not authorized");
 
         const userObj = await UsersModel.findOne({ _id });
         if (userObj) {
-            req.userObj = userObj.toObject(); // passing the found user object to next middleware
+            req.loggedUser = userObj; // storing the found user's mongoDB object in req body so that it can be accessed from other middlewares
             return next();
-        }
-
-        return sendErrorResp(res, 403, "un-authorized");
+        } else return sendErrorResp(res, 404, "user not found");
     } catch (err) {
         errorCatch(err, req, res);
     }
