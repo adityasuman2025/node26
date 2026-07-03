@@ -1,7 +1,6 @@
 import { Router } from "express";
 import validator from "validator";
 import bcrypt from "bcrypt";
-import cookieParser from "cookie-parser";
 import UsersModel from "../models/Users.js";
 import { sendErrorResp, sendResp, apiHandler } from "../utils.js";
 import { AUTH_TOKEN_KEY } from "../constants.js";
