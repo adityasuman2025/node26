@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import UsersModel from "../models/Users.js";
+import UsersModel from "../models/usersModel.js";
 import { errorCatch, sendErrorResp } from "../utils.js"
 import { JWT_SECRET_KEY } from "../constants.js";
 

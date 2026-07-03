@@ -1,5 +1,5 @@
 import express from "express";
-import UsersModel from "../models/Users.js";
+import UsersModel from "../models/usersModel.js";
 import { userAuth } from "../middlewares/auth.js";
 import { sendErrorResp, sendResp, apiHandler } from "../utils.js";
 import { ALLOWED_USER_FIELDS } from "../constants.js";

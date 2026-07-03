@@ -1,8 +1,8 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import dbConnection from "./db.js";
-import authRouter from "./routes/auth.js";
-import userRouter from "./routes/user.js";
+import authRouter from "./routes/authRouter.js";
+import userRouter from "./routes/userRouter.js";
 import { sendErrorResp } from "./utils.js";
 import { PORT } from "./constants.js";
 
