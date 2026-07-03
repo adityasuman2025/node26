@@ -9,6 +9,7 @@ const userSchema = new Schema({
         type: String,
         required: [true, "Name is required"],
         trim: true,
+        index: true, // doing indexing on name field
         minLength: [3, "Name is too short"],
         maxLength: [100, "Name is too long"],
     },

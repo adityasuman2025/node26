@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 export function sendErrorResp(res, status, error) {
-    return res.status(status).send({ status, error })
+    return res.status(status).json({ status, error })
 }
 
 export function sendResp(res, data) {
-    return res.status(200).send({ status: 200, data })
+    return res.status(200).json({ status: 200, data })
 }
 
 export function errorCatch(err, req, res) {

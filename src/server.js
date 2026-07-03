@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import dbConnection from "./db.js";
 import authRouter from "./routes/authRouter.js";
 import profileRouter from "./routes/profileRouter.js";
+import connectionRouter from "./routes/connectionRouter.js";
 import { sendErrorResp } from "./utils/index.js";
 import { PORT } from "./constants.js";
 
@@ -12,7 +13,7 @@ app.use(cookieParser()); // cookie-parser middleware parses the cookie containin
 
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
-
+app.use("/connection", connectionRouter);
 
 // default apis
 app.get("/ping", (req, res) => res.send("pong"));

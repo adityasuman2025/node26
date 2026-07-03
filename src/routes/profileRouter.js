@@ -44,8 +44,8 @@ profileRouter.patch("/", userAuth, (...args) => {
 
 profileRouter.patch("/changePassword", userAuth, (...args) => {
     apiHandler(async (req, res) => {
-        const loggedUser = req.loggedUser || {};
-        if (Object.keys(loggedUser).length) {
+        const loggedUser = req.loggedUser;
+        if (loggedUser) {
             const { oldPassword = "", newPassword = "" } = req.body || {};
             if (!oldPassword.trim() || !newPassword.trim()) return sendErrorResp(res, 400, "new or old password is missing");
             if (!validator.isStrongPassword(newPassword)) return sendErrorResp(res, 400, "password is not strong enough");
