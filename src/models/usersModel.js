@@ -77,7 +77,7 @@ userSchema.methods.validatePassword = async function(inputPassword) {
     const user = this;
     const dbPasswordHash = user.password;
 
-    return bcrypt.compare(inputPassword, dbPasswordHash)
+    return await bcrypt.compare(inputPassword, dbPasswordHash)
 }
 
 const UsersModel = model("users", userSchema);

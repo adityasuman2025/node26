@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import dbConnection from "./db.js";
 import checkDbConnection from "./middlewares/checkDbConnection.js";
 import checkEnvVariables from "./middlewares/checkEnvVariables.js";
+import rateLimitter from "./middlewares/rateLimitter.js";
 import authRouter from "./routes/authRouter.js";
 import profileRouter from "./routes/profileRouter.js";
 import userRouter from "./routes/userRouter.js";
@@ -15,6 +16,7 @@ app.use(express.json()); // express.json() middleware parses the incoming HTTP r
 app.use(cookieParser()); // cookie-parser middleware parses the cookie containing in the API request
 app.use(checkEnvVariables); // middleware validates that all required environment variables are defined
 app.use(checkDbConnection); // middleware verifies database connectivity for each incoming request
+app.use(rateLimitter);
 
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
